@@ -1,0 +1,1385 @@
+---
+openapi: 3.0.0
+info:
+  title: Movies API
+  description: This is a system API for Netflix
+  contact:
+    name: Cristina Akin
+    email: cakin@ms3-inc.com
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/cakin/movies-sys-api/1.0.0
+  description: SwaggerHub API Auto Mocking
+security:
+- bearerAuth: []
+tags:
+- name: movies
+  description: Information about movies
+- name: actors
+  description: Information about actors
+- name: users
+  description: Information about users
+- name: genres
+  description: Information about genres
+- name: favorites
+  description: Information about favorite movies of specific users
+paths:
+  /movies:
+    get:
+      tags:
+      - movies
+      summary: get movie records from database
+      description: This operation returns the movie list
+      operationId: getMoviesList
+      parameters:
+      - name: movieName
+        in: query
+        description: Movie name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Beautiful Creatures
+      - name: genre
+        in: query
+        description: Genres used for filtering movies
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Drama
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/movie'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      tags:
+      - movies
+      summary: Post a movie
+      description: This operation inserts another movie record
+      operationId: postMovie
+      requestBody:
+        $ref: '#/components/requestBodies/moviePost'
+      responses:
+        "201":
+          description: Record created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /movies/{movieId}:
+    get:
+      tags:
+      - movies
+      summary: get movie by ID
+      description: This operation returns a movie record specified by ID
+      operationId: getMovieByID
+      parameters:
+      - name: movieId
+        in: path
+        description: movie ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 10
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+      - movies
+      summary: delete movie by ID
+      description: This operation deletes a movie record specified by ID
+      operationId: deleteMovieByID
+      parameters:
+      - name: movieId
+        in: path
+        description: movie ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 10
+      responses:
+        "204":
+          description: No content
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    patch:
+      tags:
+      - movies
+      summary: updates a specific movie movie record
+      description: This operation updates a movie record specified by ID
+      operationId: patchMovieByID
+      parameters:
+      - name: movieId
+        in: path
+        description: movie ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 10
+      requestBody:
+        $ref: '#/components/requestBodies/moviePatch'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /actors:
+    get:
+      tags:
+      - actors
+      summary: get actor records from database
+      description: This operation returns the actor records
+      operationId: getActorsList
+      parameters:
+      - name: actorName
+        in: query
+        description: actor name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Jackie Chan
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      tags:
+      - actors
+      summary: Post an actor
+      description: This operation inserts another actor record
+      operationId: postActor
+      requestBody:
+        $ref: '#/components/requestBodies/actorPost'
+      responses:
+        "201":
+          description: Record created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /actors/{actorId}:
+    get:
+      tags:
+      - actors
+      summary: get an actor by ID
+      description: This operation returns an actor record specified by ID
+      operationId: getActorByID
+      parameters:
+      - name: actorId
+        in: path
+        description: actor ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 1
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/actor'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+      - actors
+      summary: delete actor by ID
+      description: This operation deletes an actor specified by ID
+      operationId: deleteActorByID
+      parameters:
+      - name: actorId
+        in: path
+        description: actor ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 1
+      responses:
+        "204":
+          description: No content
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    patch:
+      tags:
+      - actors
+      summary: updates a specific actor record
+      description: This operation updates an actor record specified by ID
+      operationId: patchActorByID
+      parameters:
+      - name: actorId
+        in: path
+        description: actor ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 1
+      requestBody:
+        $ref: '#/components/requestBodies/actorPatch'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /users:
+    get:
+      tags:
+      - users
+      summary: get all the users
+      description: This operation returns the users list
+      operationId: getUsersList
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      tags:
+      - users
+      summary: Create an user
+      description: This operation creates another user
+      operationId: postUser
+      requestBody:
+        $ref: '#/components/requestBodies/userPost'
+      responses:
+        "201":
+          description: Record created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /users/{userId}:
+    get:
+      tags:
+      - users
+      summary: get an user by ID
+      description: This operation returns an user record specified by ID
+      operationId: getUserByID
+      parameters:
+      - name: userId
+        in: path
+        description: user ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 8
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+      - users
+      summary: delete user by ID
+      description: 'This operation deletes the user '
+      operationId: deleteUserByID
+      parameters:
+      - name: userId
+        in: path
+        description: user ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 8
+      responses:
+        "204":
+          description: No content
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    patch:
+      tags:
+      - users
+      summary: updates user
+      description: This operation updates an user account specified by ID
+      operationId: patchUserByID
+      parameters:
+      - name: userId
+        in: path
+        description: user ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 8
+      requestBody:
+        $ref: '#/components/requestBodies/userPatch'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /favorites:
+    get:
+      tags:
+      - favorites
+      summary: get all the favourite movies of a specific user
+      description: This operation returns the all the liked movies of an user
+      operationId: getFavorites
+      parameters:
+      - name: page
+        in: query
+        description: page nr.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          example: 1
+      - name: limit
+        in: query
+        description: number of movies to return
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          example: 5
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/favorite'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      tags:
+      - favorites
+      summary: 'Create a favorites movies list for an user '
+      description: A new list of liked movies is created
+      operationId: postFavorite
+      requestBody:
+        $ref: '#/components/requestBodies/favoritePost'
+      responses:
+        "201":
+          description: Record created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /favorites/{userId}:
+    get:
+      tags:
+      - favorites
+      summary: get an favorite movies list by user ID
+      description: This operation returns a list of favorite movies record specified by ID
+      operationId: getFavoriteByID
+      parameters:
+      - name: userId
+        in: path
+        description: user ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 8
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/favorite'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+      - favorites
+      summary: delete an user's liked movies list
+      description: 'This operation deletes the user''s ''favorites'' list '
+      operationId: deleteFavoriteByID
+      parameters:
+      - name: userId
+        in: path
+        description: user ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 8
+      responses:
+        "204":
+          description: No content
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    patch:
+      tags:
+      - favorites
+      summary: updates the favorite movies list
+      description: This operation updates an user's liked movies
+      operationId: patchFavoriteByID
+      parameters:
+      - name: userId
+        in: path
+        description: user ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 8
+      requestBody:
+        $ref: '#/components/requestBodies/favoritePatch'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /genres:
+    get:
+      tags:
+      - genres
+      summary: get all the genres
+      description: This operation returns the genre list
+      operationId: getGenres
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/genre'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      tags:
+      - genres
+      summary: Create a genre
+      description: This operation creates another genre
+      operationId: postGenre
+      requestBody:
+        $ref: '#/components/requestBodies/genrePost'
+      responses:
+        "201":
+          description: Record created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /genres/{genreId}:
+    get:
+      tags:
+      - genres
+      summary: get a genre by ID
+      description: This operation returns a genre record specified by ID
+      operationId: getGenreByID
+      parameters:
+      - name: genreId
+        in: path
+        description: genre ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 4
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/genre'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+      - genres
+      summary: delete genre by ID
+      description: 'This operation deletes the genre record '
+      operationId: deleteGenreByID
+      parameters:
+      - name: genreId
+        in: path
+        description: genre ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 4
+      responses:
+        "204":
+          description: No content
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    patch:
+      tags:
+      - genres
+      summary: updates genre
+      description: 'This operation updates a genre record '
+      operationId: patchGenreByID
+      parameters:
+      - name: genreId
+        in: path
+        description: genre ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 4
+      requestBody:
+        $ref: '#/components/requestBodies/genrePatch'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+components:
+  schemas:
+    movie:
+      type: object
+      properties:
+        movieId:
+          type: integer
+          example: 1
+        genres:
+          type: array
+          items:
+            type: object
+            allOf:
+            - $ref: '#/components/schemas/genre'
+        movieName:
+          type: string
+          example: James Bond
+        releaseDate:
+          type: string
+          format: date
+          example: 2021-10-10
+        genreIds:
+          type: array
+          items:
+            type: integer
+            example: 1
+      description: movie request
+    actor:
+      type: object
+      properties:
+        actorId:
+          type: integer
+          example: 1
+        actorName:
+          type: string
+          example: Jackie Chan
+        dateOfBirth:
+          type: string
+          format: date
+          example: 1966-12-10
+      description: actor request
+    user:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 1
+        userFirstName:
+          type: string
+          example: Alex
+        userLastName:
+          type: string
+          example: Smith
+        email:
+          type: string
+          example: alex_smith@gmail.com
+      description: user request
+    genre:
+      type: object
+      properties:
+        genreId:
+          type: integer
+          example: 1
+        genreName:
+          type: string
+          example: Drama
+      description: genre request
+    favorite:
+      type: object
+      properties:
+        favoriteId:
+          type: integer
+          example: 1
+        user:
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/user'
+        movies:
+          type: array
+          items:
+            type: object
+            allOf:
+            - $ref: '#/components/schemas/movie'
+        movieIds:
+          type: array
+          items:
+            type: integer
+            example: 1
+      description: liked movie request
+    error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        type:
+          type: string
+          example: EXCEPTION
+        message:
+          type: string
+          example: Error message in details
+      description: error object
+  responses:
+    "201":
+      description: Record created
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    "204":
+      description: No content
+    "401":
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    "500":
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  parameters:
+    movieId:
+      name: movieId
+      in: path
+      description: movie ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+        example: 10
+    actorId:
+      name: actorId
+      in: path
+      description: actor ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+        example: 1
+    userId:
+      name: userId
+      in: path
+      description: user ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+        example: 8
+    genreId:
+      name: genreId
+      in: path
+      description: genre ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+        example: 4
+    favoriteId:
+      name: movieId
+      in: path
+      description: movie ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+        example: 8
+    page:
+      name: page
+      in: query
+      description: page nr.
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 1
+    limit:
+      name: limit
+      in: query
+      description: number of movies to return
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 5
+  requestBodies:
+    moviePost:
+      description: Request for post
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              genreIds:
+                type: array
+                items:
+                  type: integer
+                  example: 1
+              movieName:
+                type: string
+                example: James Bond
+              releaseDate:
+                type: string
+                format: date
+                example: 2021-10-10
+      required: true
+    moviePatch:
+      description: Request for patch
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              genreIds:
+                type: array
+                items:
+                  type: integer
+                  example: 1
+              movieName:
+                type: string
+                example: James Bond
+              releaseDate:
+                type: string
+                format: date
+                example: 2021-10-10
+      required: false
+    actorPost:
+      description: Request for post
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              actorName:
+                type: string
+                example: Brad Pitt
+              dateOfBirth:
+                type: string
+                format: date
+                example: 1980-11-11
+      required: true
+    actorPatch:
+      description: Request for post
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              actorName:
+                type: string
+                example: Brad Pitt
+              dateOfBirth:
+                type: string
+                format: date
+                example: 1980-11-11
+      required: false
+    userPost:
+      description: Request for users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              userFirstName:
+                type: string
+                example: Alex
+              userLastName:
+                type: string
+                example: Smith
+              email:
+                type: string
+                example: alex_smith@gmail.com
+      required: true
+    userPatch:
+      description: Request for users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              userFirstName:
+                type: string
+                example: Alex
+              userLastName:
+                type: string
+                example: Smith
+              email:
+                type: string
+                example: alex_smith@gmail.com
+      required: false
+    favoritePost:
+      description: Request for favorite
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                type: object
+                allOf:
+                - $ref: '#/components/schemas/user'
+              moviesIds:
+                type: array
+                items:
+                  type: integer
+                  example: 2
+      required: true
+    favoritePatch:
+      description: Request for favorite
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              moviesIds:
+                type: array
+                items:
+                  type: integer
+                  example: 1
+      required: false
+    genrePost:
+      description: Request for movie genre
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              genreName:
+                type: string
+                example: action
+      required: true
+    genrePatch:
+      description: Request for movie genre
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              genreName:
+                type: string
+                example: action
+      required: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

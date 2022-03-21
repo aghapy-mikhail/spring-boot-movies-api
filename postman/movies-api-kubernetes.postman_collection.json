@@ -1,0 +1,3209 @@
+{
+	"info": {
+		"_postman_id": "1d2a8490-a88c-4ca7-8c2d-38c4e19fe965",
+		"name": "Movies Api/ kubernetes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Genre",
+			"item": [
+				{
+					"name": "Create a new Genre",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The Location header is present\", () => {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    var location = pm.response.headers.get(\"Location\");\r",
+									"        pm.expect(location).to.exist;\r",
+									"\r",
+									"\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									"\r",
+									"var genreId = pm.response.headers.get(\"Location\").split(\"/\").pop();\r",
+									"pm.collectionVariables.set(\"genreId\", genreId);\r",
+									"\r",
+									"pm.collectionVariables.set(\"genreName\", parseInt(genreId)+1);\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"genreName\": \"{{genreName}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Genres",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"array\",\r",
+									"  \"items\":[\r",
+									"     {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drrama\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"genre request\"\r",
+									"      }\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"    pm.expect(response[0]).to.be.an(\"object\");\r",
+									"  pm.expect(response[0].genreId).to.be.a(\"number\");\r",
+									"  pm.expect(response[0].genreName).to.be.a(\"string\");\r",
+									" \r",
+									"\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get genre By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drrama\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"  pm.expect(response.genreId).to.be.a(\"number\");\r",
+									"  pm.expect(response.genreName).to.be.a(\"string\");\r",
+									" \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response data matches \", () => {\r",
+									"    pm.expect(response.genreName).to.eql(pm.collectionVariables.get('genreId'));\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres/{{genreId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres",
+								"{{genreId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET genre By Id-Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"NotFoundException\");\r",
+									"    pm.expect(response.message).to.eql(\"Unable to find the record with ID 100 \");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Method Not Supported for genres",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 405\", function () {\r",
+									"    pm.response.to.have.status(405);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"HttpRequestMethodNotSupportedException\");\r",
+									"    pm.expect(response.message).to.eql(\"Request method 'POST' not supported\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bad Genre Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									"     \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"MethodArgumentNotValidException\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movie",
+			"item": [
+				{
+					"name": "Create a new Movie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The Location header is present\", () => {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    var location = pm.response.headers.get(\"Location\");\r",
+									"    pm.expect(location).to.exist;\r",
+									"    // var location_header_info=location.split('/');\r",
+									"    //  pm.expect(location).eql(\"/movies/\"+location_header_info[2]);\r",
+									"        //   pm.expect(location).eql(\"/movies/\"+movieId);\r",
+									"\r",
+									"   \r",
+									"\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									"\r",
+									"var movieId = pm.response.headers.get(\"Location\").split(\"/\").pop();\r",
+									"pm.collectionVariables.set(\"movieId\", movieId);\r",
+									"\r",
+									"// var movieName = \"love\" ;\r",
+									"// pm.collectionVariables.set(\"movieName\", movieName);\r",
+									"\r",
+									"pm.collectionVariables.set(\"movieName\", parseInt(movieId)+1);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"genreIds\": [{{genreId}}],\r\n  \"movieName\": \"{{movieName}}\",\r\n  \"releaseDate\": \"2011-10-10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Movies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"array\",\r",
+									"  \"items\":[\r",
+									"     {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"movieId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genres\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"genre\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drama\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"genre request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"movieName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"James Bond\"\r",
+									"          },\r",
+									"          \"releaseDate\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2021-10-10\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"movie request\"\r",
+									"      }\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"    pm.expect(response[0]).to.be.an(\"object\");\r",
+									"  pm.expect(response[0].movieId).to.be.a(\"number\");\r",
+									"  pm.expect(response[0].genres).to.be.a(\"array\");\r",
+									" \r",
+									"\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movie By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									" \r",
+									"     \r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"movieId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genres\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"genre\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drama\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"genre request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"movieName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"James Bond\"\r",
+									"          },\r",
+									"          \"releaseDate\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2021-10-10\"\r",
+									"          }\r",
+									"        }\r",
+									"      \r",
+									"  \r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"  pm.expect(response.movieId).to.be.a(\"number\");\r",
+									"  pm.expect(response.movieName).to.be.a(\"string\");\r",
+									"  pm.expect(response.releaseDate).to.be.a(\"string\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response data matches \", () => {\r",
+									"    pm.expect(response.movieId).to.eql(response.movieId);\r",
+									"    pm.expect(response.movieName).to.eql(response.movieName);\r",
+									"        pm.expect(response.releaseDate).to.eql(\"2011-10-10\");\r",
+									"        pm.expect(response.genres[0].genreName).to.eql(response.genres[0].genreName);\r",
+									"\r",
+									"        \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies/{{movieId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies",
+								"{{movieId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movie By Id-Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									" \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"NotFoundException\");\r",
+									"    pm.expect(response.message).to.eql(\"Unable to find the record with ID 100 \");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bad Movie Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									"     \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"MethodArgumentNotValidException\");\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \r\n  \"movieName\": \"love\"\r\n \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Method Not Supported for movies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 405\", function () {\r",
+									"    pm.response.to.have.status(405);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"HttpRequestMethodNotSupportedException\");\r",
+									"    pm.expect(response.message).to.eql(\"Request method 'POST' not supported\");\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies/p",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies",
+								"p"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movies By Genre",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"array\",\r",
+									"  \"items\":[\r",
+									"     {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"movieId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genres\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"genre\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drama\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"genre request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"movieName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"James Bond\"\r",
+									"          },\r",
+									"          \"releaseDate\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2021-10-10\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"movie request\"\r",
+									"      }\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"  pm.expect(response[0].movieId).to.be.a(\"number\");\r",
+									"  pm.expect(response[0].movieName).to.be.a(\"string\");\r",
+									"  pm.expect(response[0].releaseDate).to.be.a(\"string\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response data matches \", () => {\r",
+									"    pm.expect(response[0].movieId).to.eql(response[0].movieId);\r",
+									"    pm.expect(response[0].movieName).to.eql(response[0].movieName);\r",
+									"        pm.expect(response[0].releaseDate).to.eql(\"2011-10-10\");\r",
+									"        pm.expect(response[0].genres[0].genreName).to.eql(response[0].genres[0].genreName);\r",
+									"\r",
+									"        \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies?genre={{genreId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "{{genreId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movie By Genre- NonExistingGenre",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									" \r",
+									"     \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 404\", function(){\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"NotExistingGenre\");\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies?genre=melodrama",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "melodrama"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movie By MovieName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"array\",\r",
+									"  \"items\":[\r",
+									"     {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"movieId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genres\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"genre\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drama\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"genre request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"movieName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"James Bond\"\r",
+									"          },\r",
+									"          \"releaseDate\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2021-10-10\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"movie request\"\r",
+									"      }\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"  pm.expect(response[0].movieId).to.be.a(\"number\");\r",
+									"  pm.expect(response[0].movieName).to.be.a(\"string\");\r",
+									"  pm.expect(response[0].releaseDate).to.be.a(\"string\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response data matches \", () => {\r",
+									"    pm.expect(response[0].movieId).to.eql(response[0].movieId);\r",
+									"    pm.expect(response[0].movieName).to.eql(response[0].movieName);\r",
+									"        pm.expect(response[0].releaseDate).to.eql(\"2011-10-10\");\r",
+									"        pm.expect(response[0].genres[0].genreName).to.eql(response[0].genres[0].genreName);\r",
+									"\r",
+									"        \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies?movieName={{movieId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "movieName",
+									"value": "{{movieId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create a new User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The Location header is present\", () => {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    var location = pm.response.headers.get(\"Location\");\r",
+									"        pm.expect(location).to.exist;\r",
+									"\r",
+									"    // var location_header_info=location.split('/');\r",
+									"    //  pm.expect(location).eql(\"/users/\"+location_header_info[2]);\r",
+									"\r",
+									"    //  pm.expect(location).eql(\"/users/\"+userId);\r",
+									"   \r",
+									"\r",
+									"});\r",
+									"\r",
+									"// Assert: Response body should be empty\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									"\r",
+									"var userId = pm.response.headers.get(\"Location\").split(\"/\").pop();\r",
+									"pm.collectionVariables.set(\"userId\", userId);\r",
+									"\r",
+									"pm.collectionVariables.set(\"email\", parseInt(userId)+1);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userFirstName\": \"Alex\",\r\n    \"userLastName\": \"Aopoin\",\r\n    \"email\": \"{{email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"array\",\r",
+									"  \"items\":[\r",
+									"     {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"userId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"userFirstName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Alex\"\r",
+									"          },\r",
+									"          \"userLastName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Smith\"\r",
+									"          },\r",
+									"          \"email\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"alex_smith@gmail.com\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"user request\"\r",
+									"      }\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"  pm.expect(response[0].userId).to.be.a(\"number\");\r",
+									"  pm.expect(response[0].userFirstName).to.be.a(\"string\");\r",
+									"  pm.expect(response[0].userLastName).to.be.a(\"string\");\r",
+									"  pm.expect(response[0].email).to.be.a(\"string\");\r",
+									"\r",
+									"\r",
+									" \r",
+									"\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									" \r",
+									"     \r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"userId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"userFirstName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Alex\"\r",
+									"          },\r",
+									"          \"userLastName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Smith\"\r",
+									"          },\r",
+									"          \"email\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"alex_smith@gmail.com\"\r",
+									"          }\r",
+									"        }\r",
+									"      \r",
+									"  \r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"  pm.expect(response.userId).to.be.a(\"number\");\r",
+									"  pm.expect(response.userFirstName).to.be.a(\"string\");\r",
+									"  pm.expect(response.userLastName).to.be.a(\"string\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response data matches \", () => {\r",
+									"    pm.expect(response.userFirstName).to.eql(\"Alex\");\r",
+									"    pm.expect(response.userLastName).to.eql(\"Aopoin\");\r",
+									"        pm.expect(response.email).to.eql(response.email);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/{{userId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Id-Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									"     \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"      \r",
+									"  \r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"NotFoundException\");\r",
+									"    pm.expect(response.message).to.eql(\"Unable to find the record with ID 100 \");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Method Not Supported for users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 405\", function () {\r",
+									"    pm.response.to.have.status(405);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"HttpRequestMethodNotSupportedException\");\r",
+									"    pm.expect(response.message).to.eql(\"Request method 'POST' not supported\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/h",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								"h"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bad User Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									"    \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"MethodArgumentNotValidException\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userFirstName\": \"alex\",\r\n    \"userLastName\": \"Aopoin\"\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Actor",
+			"item": [
+				{
+					"name": "Create a new Actor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The Location header is present\", () => {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    var location = pm.response.headers.get(\"Location\");\r",
+									"        pm.expect(location).to.exist;\r",
+									"\r",
+									"    // var location_header_info=location.split('/');\r",
+									"    //  pm.expect(location).eql(\"/actors/\"+location_header_info[2]);\r",
+									"\r",
+									"\r",
+									"        //   pm.expect(location).eql(\"/actors/\"+actorId);\r",
+									"});\r",
+									"\r",
+									"// Assert: Response body should be empty\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									"\r",
+									"\r",
+									"var actorId = pm.response.headers.get(\"Location\").split(\"/\").pop();\r",
+									"pm.collectionVariables.set(\"actorId\", actorId);\r",
+									"\r",
+									"pm.collectionVariables.set(\"actorName\", parseInt(actorId)+1);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"actorName\": \"{{actorName}}\",\r\n  \"dateOfBirth\": \"1970-11-11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Actors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"array\",\r",
+									"  \"items\":[\r",
+									"     {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"actorId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"actorName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Angel Lee\"\r",
+									"          },\r",
+									"          \"dateOfBirth\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2001-10-10\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"actor request\"\r",
+									"      }\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"  pm.expect(response[0].actorId).to.be.a(\"number\");\r",
+									"  pm.expect(response[0].actorName).to.be.a(\"string\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Actor By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									" \r",
+									"     \r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"actorId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"actorName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Angel Lee\"\r",
+									"          },\r",
+									"          \"dateOfBirth\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2001-10-10\"\r",
+									"          }\r",
+									"        }\r",
+									"      \r",
+									"  \r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"  pm.expect(response.actorId).to.be.a(\"number\");\r",
+									"  pm.expect(response.actorName).to.be.a(\"string\");\r",
+									"  pm.expect(response.dateOfBirth).to.be.a(\"string\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response data matches \", () => {\r",
+									"    pm.expect(response.actorId).to.eql(response.actorId);\r",
+									"    pm.expect(response.actorName).to.eql(response.actorName);\r",
+									"        \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors/{{actorId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors",
+								"{{actorId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Actor By Id-Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									" \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"  \r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"NotFoundException\");\r",
+									"    pm.expect(response.message).to.eql(\"Unable to find the record with ID 100 \");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Method Not Supported for actors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 405\", function () {\r",
+									"    pm.response.to.have.status(405);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"HttpRequestMethodNotSupportedException\");\r",
+									"    pm.expect(response.message).to.eql(\"Request method 'POST' not supported\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors/!",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors",
+								"!"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bad Actor Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"MethodArgumentNotValidException\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"actorName\": \"Jonny Depp \"\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Actor By Actor Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"array\",\r",
+									"  \"items\":[\r",
+									"     {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"actorId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"actorName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Angel Lee\"\r",
+									"          },\r",
+									"          \"dateOfBirth\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2001-10-10\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"actor request\"\r",
+									"      }\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"  pm.expect(response[0].actorId).to.be.a(\"number\");\r",
+									"  pm.expect(response[0].actorName).to.be.a(\"string\");\r",
+									" \r",
+									"\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors?actorName={{actorId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors"
+							],
+							"query": [
+								{
+									"key": "actorName",
+									"value": "{{actorId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Favorite",
+			"item": [
+				{
+					"name": "Get All Favorites",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									"  \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \r",
+									"          \"favorites\":{\r",
+									"              \"type\": \"array\",\r",
+									"              \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                 \"favorite\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"user\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"allOf\": [\r",
+									"              {\r",
+									"                \"user\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"userId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"userFirstName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Alex\"\r",
+									"          },\r",
+									"          \"userLastName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Smith\"\r",
+									"          },\r",
+									"          \"email\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"alex_smith@gmail.com\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"user request\"\r",
+									"      }\r",
+									"              }\r",
+									"            ]\r",
+									"          },\r",
+									"          \"movies\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"movie\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"movieId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genres\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"genre\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drama\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"genre request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"movieName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"James Bond\"\r",
+									"          },\r",
+									"          \"releaseDate\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2021-10-10\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"movie request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"liked movie request\"\r",
+									"      } \r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"              \r",
+									"          },\r",
+									"\r",
+									"\r",
+									"          \"allPages\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"  \"allItems\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 3\r",
+									"          },        \r",
+									" \"currentPage\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 0\r",
+									"          }\r",
+									"\r",
+									"        }\r",
+									"    \r",
+									"}\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"   \r",
+									"  pm.expect(response.favorites).to.be.an(\"array\");\r",
+									"  pm.expect(response.favorites[0].user.userFirstName).to.be.a(\"string\");\r",
+									"  pm.expect(response.favorites[0].user.userLastName).to.be.a(\"string\");\r",
+									"  pm.expect(response.favorites[0].user.email).to.be.a(\"string\");\r",
+									"  \r",
+									" \r",
+									"\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/favorites",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Favorite By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema={\r",
+									" \r",
+									"     \r",
+									"       \r",
+									"          \r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"user\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"allOf\": [\r",
+									"              {\r",
+									"                \"user\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"userId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"userFirstName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Alex\"\r",
+									"          },\r",
+									"          \"userLastName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Smith\"\r",
+									"          },\r",
+									"          \"email\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"alex_smith@gmail.com\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"user request\"\r",
+									"      }\r",
+									"              }\r",
+									"            ]\r",
+									"          },\r",
+									"          \"movies\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"movie\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"movieId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genres\": {\r",
+									"            \"type\": \"array\",\r",
+									"            \"items\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"allOf\": [\r",
+									"                {\r",
+									"                  \"genre\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"genreId\": {\r",
+									"            \"type\": \"integer\",\r",
+									"            \"example\": 1\r",
+									"          },\r",
+									"          \"genreName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Drama\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"genre request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"movieName\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"James Bond\"\r",
+									"          },\r",
+									"          \"releaseDate\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date\",\r",
+									"            \"example\": \"2021-10-10\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"movie request\"\r",
+									"      }\r",
+									"                }\r",
+									"              ]\r",
+									"            }\r",
+									"          }\r",
+									"        },\r",
+									"        \"description\": \"liked movie request\"\r",
+									"      \r",
+									"                }\r",
+									"\r",
+									"\r",
+									"const response=pm.response.json();\r",
+									"pm.test(\"Status is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Content-Type is application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response has all expected properties\",()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"  pm.expect(response.user.userFirstName).to.be.a(\"string\");\r",
+									"  pm.expect(response.user.email).to.be.a(\"string\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response in less than 300ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response data matches \", () => {\r",
+									"    pm.expect(response.user.userId).to.eql(response.user.userId);\r",
+									"    pm.expect(response.user.userFirstName).to.eql(\"Alex\");\r",
+									"        pm.expect(response.user.userLastName).to.eql(\"Aopoin\");\r",
+									"       \r",
+									"\r",
+									"        \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/favorites/{{userId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"favorites",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Favorite By Id-Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const schema={\r",
+									" \r",
+									"    \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"timestamp\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"format\": \"date-time\"\r",
+									"          },\r",
+									"          \"type\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"EXCEPTION\"\r",
+									"          },\r",
+									"          \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"example\": \"Error message in details\"\r",
+									"          }\r",
+									"        }\r",
+									"                }\r",
+									"\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header should be application/json\", () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response follows the expected schema\",function(){\r",
+									"    const isSchemaValid = tv4.validateResult(response, schema).valid;\r",
+									"    pm.expect(isSchemaValid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should have all expected properties\", () => {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+									"    pm.expect(response.type).to.be.a(\"string\");\r",
+									"    pm.expect(response.message).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response should contain the expected movie data\", () => {\r",
+									"    pm.expect(response.type).to.eql(\"NotFoundException\");\r",
+									"    pm.expect(response.message).to.eql(\"Unable to find the record with ID 100 \");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/favorites/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"favorites",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Favorites list By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movieIds\": [1]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/favorites/{{userId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"favorites",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Favorites with Pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/favorites?page=0&limit=2",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"favorites"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PATCH DELETE",
+			"item": [
+				{
+					"name": "Update Movie By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"genreIds\": [{{genreId}}],\r\n  \"movieName\": \"LOVE LOVE LOVE\",\r\n  \"releaseDate\": \"2011-10-10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies/{{movieId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies",
+								"{{movieId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update genre By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"genreName\": \"actionn\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres/{{genreId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres",
+								"{{genreId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update  Actor By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"actorName\": \"Angelina Pitt  \",\r\n  \"dateOfBirth\": \"1970-11-11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors/{{actorId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors",
+								"{{actorId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userFirstName\": \"Alex\",\r\n    \"userLastName\": \"Aopoin\",\r\n    \"email\": \"aopoin_alex@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/{{userId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Actor By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/actors/{{actorId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"actors",
+								"{{actorId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/users/{{userId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Movie By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/movies/{{movieId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"movies",
+								"{{movieId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete genre By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body should be empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});\r",
+									"\r",
+									"//pm.collectionVariables.set(\"genreId\",0);\r",
+									"// pm.collectionVariables.set(\"genreName\",\"action\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}:{{port}}/genres/{{genreId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"genres",
+								"{{genreId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const authTimestamp = pm.collectionVariables.get(\"authTimestamp\");",
+					"const authExpiresIn = pm.collectionVariables.get(\"authExpiresIn\");",
+					"",
+					"// refresh the token if it's expired",
+					"if ((Date.now() - authTimestamp) >= authExpiresIn) {",
+					"    pm.sendRequest({",
+					"        url: pm.environment.get(\"authUrl\"),",
+					"        method: 'POST',",
+					"        header: {",
+					"            'Accept': 'application/json',",
+					"            'Content-Type': 'x-www-form-urlencoded'",
+					"        },",
+					"        body: {",
+					"            mode: 'urlencoded',",
+					"            urlencoded: [",
+					"                {key: 'client_id', value: pm.environment.get(\"client_id\")},",
+					"                {key: 'client_secret', value: pm.environment.get(\"client_secret\")},",
+					"                {key: 'username', value: pm.environment.get('username')},",
+					"                {key: 'password', value: pm.environment.get('password')},",
+					"                {key: 'grant_type', value: pm.environment.get('grant_type')}",
+					"            ]",
+					"        }",
+					"    }, (e, response) => {",
+					"        const json = response.json();",
+					"        const newToken=json.access_token;",
+					"        pm.environment.set('authToken', newToken);",
+					"        pm.collectionVariables.set('authTimestamp', Date.now());",
+					"        pm.collectionVariables.set('authExpiresIn', json.expires_in * 1000);",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "movieId",
+			"value": "0"
+		},
+		{
+			"key": "genreId",
+			"value": "0"
+		},
+		{
+			"key": "userId",
+			"value": "0"
+		},
+		{
+			"key": "actorId",
+			"value": "0"
+		},
+		{
+			"key": "genreName",
+			"value": "1"
+		},
+		{
+			"key": "movieName",
+			"value": "1"
+		},
+		{
+			"key": "actorName",
+			"value": "1"
+		},
+		{
+			"key": "email",
+			"value": "1"
+		},
+		{
+			"key": "authTimestamp",
+			"value": "0"
+		},
+		{
+			"key": "authExpiresIn",
+			"value": ""
+		}
+	]
+}

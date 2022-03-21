@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+
+  auth:
+    container_name: movies-auth
+    image: jboss/keycloak:latest
+    ports:
+      - '8080:8080'
+    environment:
+      KEYCLOAK_USER: "admin"
+      KEYCLOAK_PASSWORD: "password"
+      KEYCLOAK_FRONTEND_URL: "http://localhost:8080/auth"
+      KEYCLOAK_IMPORT: /tmp/movies-realm.json
+    volumes:
+      -  ../keycloak/movies-realm.json:/tmp/movies-realm.json
+    networks:
+      - local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    restart: on-failure
+
+  # MySQL Database
+  database:
+    container_name: movie-db
+    image: mysql
+    environment:
+      MYSQL_DATABASE: movie_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    depends_on:
+      - auth
+    networks:
+      - local
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 5
+    restart: on-failure
+
+
+
+    # Movies API
+  api:
+    container_name: movies-api
+    image: movies-api:latest
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://movie-db:3306/movie_db
+      KEYCLOAK_AUTH_SERVER_URL: http://movies-auth:8080/auth
+      KEYCLOAK_REALM: movies-realm
+    ports:
+      - '8090:8090'
+    networks:
+      - local
+    depends_on:
+      auth:
+        condition: service_healthy
+      database:
+        condition: service_healthy
+    restart: on-failure
+
+
+
+networks:
+  local:
+    driver: bridge
+    

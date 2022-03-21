@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-credentials
+  namespace: movies
+type: Opaque
+stringData:
+  mysql_password: root
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+  namespace: movies
+  labels:
+    name: mysql-service
+    app: mysql
+spec:
+  clusterIP: None
+  ports:
+    - port: 3306
+  selector:
+    name: mysql-pod
+    app: mysql
+
+---    
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-volume
+  namespace: movies
+  labels:
+    name: mysql-pv-volume
+    app: mysql
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  namespace: movies
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi  
+
+
+---    
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deploy
+  namespace: movies
+  labels:
+    name: mysql-deploy
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: mysql-pod
+      app: mysql
+  template:
+    metadata:
+      name: mysql-pod
+      labels:
+        name: mysql-pod
+        app: mysql
+    spec:
+      containers:
+        - name: movie-db
+          image: mysql:latest
+          env:
+            - name: MYSQL_DATABASE
+              value: movie_db
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials
+                  key: mysql_password
+          # resources:
+          #   limits:
+          #     memory: "3Gi"
+          #     cpu: "1000m"
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim

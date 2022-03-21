@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-credentials
+  namespace: movies
+type: kubernetes.io/basic-auth
+stringData:
+  username: admin
+  password: password
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-svc
+  namespace: movies
+  labels:
+    name: keycloak-svc
+    app: keycloak-svc
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30500
+  selector:
+    app: keycloak-pod
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-deploy
+  namespace: movies
+  labels:
+    app: keycloak-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-pod
+  template:
+    metadata:
+      labels:
+        app: keycloak-pod
+    spec:
+      containers:
+      - name: movies-auth
+        image: jboss/keycloak:latest
+        env:
+          - name: DB_VENDOR
+            value: h2
+          - name: PROXY_ADDRESS_FORWARDING
+            value: "true"
+          - name: KEYCLOAK_USERNAME
+            valueFrom: 
+              secretKeyRef:
+                name: keycloak-credentials
+                key: username
+          - name: KEYCLOAK_PASSWORD
+            valueFrom: 
+              secretKeyRef:
+                name: keycloak-credentials
+                key: password                
+          - name: KEYCLOAK_FRONTEND_URL
+            value: http://movies.com/auth
+          - name: KEYCLOAK_IMPORT
+            value: /config/movies-realm.json 
+        volumeMounts:
+          - name: movies-realm
+            mountPath: /config
+            readOnly: true 
+        # resources:
+        #   requests:
+        #     memory: "1024Mi"
+        #     cpu: "1000m"
+        #   limits:
+        #     memory: "3Gi"
+        #     cpu: "2000m"
+        ports:
+          - containerPort: 8080
+      volumes:
+        - name: movies-realm
+          configMap:
+            name: movies-realm
+          
