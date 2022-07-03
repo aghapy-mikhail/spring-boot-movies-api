@@ -18,7 +18,7 @@ pipeline {
     //Run the api in docker with it's keycloak and database dependencies
         stage('Run Movies-API') {
           steps {
-            sh 'docker compose -f Movies/docker-compose.yml up -d'
+            sh 'docker compose  Movies/docker-compose.yml up -d'
           }
 
         }   
